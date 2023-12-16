@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataFort | Homepage</title>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class=" ctx_z1">
+        <nav class=" ">
+            <div class="nav-wrapper">
+              <a href="#" class="brand-logo"><img height="50" src="./prototype_f3.png" alt=""></a>
+              <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a href="./oldLogs.html">Old Logs</a></li>
+              </ul>
+            </div>
+        </nav>
+        <div class="row">
+            <div class="col s12">
+                <h4>DataFort System Logs</h4>
+            </div>
+        </div>       
+        <div class="row">
+            <div class="col s4 ">
+
+                <div class="card">
+                    <div class="card-image waves-effect waves-block waves-light">
+                        <img class="activator" src="./undraw_cloud_files_wmo8.svg">
+                    </div>
+                    <div class="card-content activator">
+                        <h4>Network Information</h4>
+                        <h6>ROUTER : Senka V66. (@ 127.0.0.1)</h6>
+                        <h6>Device List : 4</h6>
+                        <h6>Load : 785 MiB/s</h6>
+                        <h6>UPTIME : 1D 14H 30M</h6>
+                        <h6>EVENTS : 458</h6>
+                    </div>
+                    <div class="card-reveal">
+                        <span class="card-title grey-text text-darken-4">Events<i class="material-icons right">close</i></span>
+                        <h4>Event Summary</h4>
+                        <h6>WRITE EVENTS : 200</h6>
+                        <h6>READ EVENTS : 340</h6>
+                        <h6>UPDATE EVENTS : 33</h6>
+                        <h6>DELETE EVENTS : 40</h6>
+                        <h6>MOVE EVENTS : 111</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col s8">
+                <div class="row">
+                      <ul class="tabs">
+                        <li class="tab col s6"><a href="#test1">Table</a></li>
+                        <li class="tab col s6"><a class="active" href="#test2">Pie Chart</a></li>
+                      </ul>
+                </div>
+                <div class="row" id="test1">
+                    <ul class="collapsible popout" id="myeventlist">
+                        <!-- <li>
+                        <div class="collapsible-header"><i class="material-icons">usb</i>Insertion</div>
+                            <div class="collapsible-body">
+                              <h6>User : Ayush <span class="badge red lighten-2 white-text">13:22:14</span></h6>
+                              <h6>Device : nimbus@144.243.56.24</h6>
+                            </div>
+                          </li>
+                          <li>
+                            <div class="collapsible-header"><i class="material-icons">content_copy</i>Copy</div>
+                            <div class="collapsible-body">
+                              <h6>User : Ayush <span class="badge red lighten-2 white-text">13:24:14</span></h6>
+                              <h6>Device : nimbus@144.243.56.24</h6>
+                            </div>
+                          </li>
+                          <li>
+                            <div class="collapsible-header"><i class="material-icons">delete_forever</i>Delete</div>
+                            <div class="collapsible-body">
+                              <h6>User : Ayush <span class="badge red lighten-2 white-text">13:27:14</span></h6>
+                              <h6>Device : nimbus@144.243.56.24</h6>
+                            </div>
+                          </li>
+                          <li>
+                            <div class="collapsible-header"><i class="material-icons">exit_to_app</i>Ejection</div>
+                            <div class="collapsible-body">
+                              <h6>User : Ayush <span class="badge red lighten-2 white-text">13:29:42</span></h6>
+                              <h6>Device : nimbus@144.243.56.24</h6>
+                            </div>
+                          </li> -->
+                    </ul>                 
+                </div>
+                <div class="row" id="test2">
+                    <div  class="col s12">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="./script.js" defer></script>
+</body>
+</html>
