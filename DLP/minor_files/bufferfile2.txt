@@ -1,0 +1,174 @@
+using System;
+using System.Diagnostics.Eventing.Reader;
+using System.IO;
+using System.Runtime.CompilerServices;
+
+class Program2
+{
+    public static void Gather()
+    {
+        // Log path for DriverFrameworks-UserMode
+        string driverLogPath = @"Microsoft-Windows-DriverFrameworks-UserMode/Operational";
+
+        // Log path for NTFS
+        string ntfsLogPath = @"Microsoft-Windows-Ntfs/Operational";
+
+        // Calculate the start time (0 minutes ago) and end time (5 minutes ago)
+        DateTime? endTimeNullable = DateTime.Now.Subtract(TimeSpan.FromMinutes(0));
+        DateTime? startTimeNullable = DateTime.Now.Subtract(TimeSpan.FromMinutes(5));
+
+        // Check for nullability and assign default values if needed
+        DateTime endTime = endTimeNullable ?? DateTime.MinValue;
+        DateTime startTime = startTimeNullable ?? DateTime.MinValue;
+
+        // Format the time strings for the query
+        string startTimeString = startTime.ToUniversalTime().ToString("o");
+        string endTimeString = endTime.ToUniversalTime().ToString("o");
+
+        // Create an EventLogQuery for DriverFrameworks-UserMode
+        string driverQueryStr = $"*[System[(EventID=1006 or EventID=1008) and TimeCreated[@SystemTime >= '{startTimeString}' and @SystemTime <= '{endTimeString}']]]";
+        EventLogQuery driverQuery = new EventLogQuery(driverLogPath, PathType.LogName, driverQueryStr);
+
+        // Create an EventLogQuery for NTFS with Event ID '142'
+        string ntfsQueryStr = $"*[System[(EventID=142) and TimeCreated[@SystemTime >= '{startTimeString}' and @SystemTime <= '{endTimeString}']]]";
+        EventLogQuery ntfsQuery = new EventLogQuery(ntfsLogPath, PathType.LogName, ntfsQueryStr);
+
+        // Gather logs for DriverFrameworks-UserMode
+        string driverVolume = GatherLogs(driverQuery);
+
+        // Gather logs for NTFS
+        string ntfsVolume = GatherLogs(ntfsQuery);
+
+        // check for change
+        ChangeDetector(driverVolume, ntfsVolume);
+    }
+
+    private static string GatherLogs(EventLogQuery query)
+    {
+        string volumeInfo = "";
+        try
+        {
+            // Create an EventLogReader to read events based on the query
+            using (EventLogReader reader = new EventLogReader(query))
+            {
+                EventRecord eventRecord;
+
+                while ((eventRecord = reader.ReadEvent()) != null)
+                {
+                    Console.WriteLine($"Event ID: {eventRecord.Id}");
+                    Console.WriteLine($"Provider Name: {eventRecord.ProviderName}");
+                    Console.WriteLine($"Time Created: {eventRecord.TimeCreated}");
+                    Console.WriteLine($"Message: {eventRecord.FormatDescription()}");
+
+                    // Additional code to extract and display volume information if available
+                    volumeInfo = GetVolumeInfo(eventRecord);
+                    if (!string.IsNullOrEmpty(volumeInfo))
+                    {
+                        Console.WriteLine($"Volume Info: {volumeInfo}");
+                    }
+
+                    Console.WriteLine();
+                }
+            }
+        }
+        catch (EventLogNotFoundException)
+        {
+            Console.WriteLine("The specified event log was not found.");
+        }
+        catch (EventLogException ex)
+        {
+            Console.WriteLine($"Error reading the event log: {ex.Message}");
+        }
+
+        return volumeInfo;
+    }
+
+    private static string GetVolumeInfo(EventRecord eventRecord)
+    {
+        // Adjust this based on the actual structure of the event record
+        foreach (EventProperty property in eventRecord.Properties)
+        {
+            if (property.Value != null && property.Value is string)
+            {
+                string propertyName = property.Value.ToString();
+
+                // Replace "VolumeInfo" with the actual property name that contains the volume information
+                if (propertyName.Equals("VolumeInfo", StringComparison.OrdinalIgnoreCase))
+                {
+                    return property.Value.ToString();
+                }
+            }
+        }
+
+        return string.Empty; // in case nothing is found
+    }
+
+    ///
+    // This part of the code is for checking if a file in a certain directory has been modified
+    // created, deleted, or moved.
+    ///
+
+    public static void ChangeDetector(string driverVolume, string ntfsVolume)
+    {
+        //string pathToMonitor = string.IsNullOrEmpty(driverVolume) ? "F:\\" : driverVolume;
+        //string pathToMonitor ="F:\\";
+        string pathToMonitor = string.IsNullOrEmpty(driverVolume) ? "F:\\" : driverVolume;
+
+        FileSystemWatcher watcher = new FileSystemWatcher(pathToMonitor);
+
+        watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+
+        watcher.Created += OnCreated;
+        watcher.Deleted += OnDeleted;
+        watcher.Changed += OnChanged;
+        watcher.Renamed += OnRenamed;
+
+        watcher.EnableRaisingEvents = true;
+
+        Console.WriteLine($"Monitoring directory: {pathToMonitor}");
+        Console.WriteLine("Press 'q' to quit.");
+
+        while (Console.ReadKey().Key != ConsoleKey.Q) { }
+    }
+
+    private static void OnCreated(object sender, FileSystemEventArgs e)
+    {
+        Console.WriteLine($"File or directory created: {e.FullPath}");
+    }
+
+    private static void OnDeleted(object sender, FileSystemEventArgs e)
+    {
+        Console.WriteLine($"File or directory deleted: {e.FullPath}");
+    }
+
+    private static void OnChanged(object sender, FileSystemEventArgs e)
+    {
+        if (e.ChangeType != WatcherChangeTypes.Changed)
+        {
+            return;
+        }
+        Console.WriteLine($"Changed: {e.FullPath}");
+    }
+
+    private static void OnRenamed(object sender, RenamedEventArgs e)
+    {
+        Console.WriteLine($"File or directory renamed from {e.OldFullPath} to {e.FullPath}");
+    }
+}
+
+namespace minor_files
+{
+    internal class Program : Program2
+    {
+        static void Main(string[] args)
+        {
+            // Run Gather in a loop every 30 seconds
+            while (true)
+            {
+                Gather();
+                // Sleep for 30 seconds before checking again
+                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(30));
+            }
+        }
+    }
+}

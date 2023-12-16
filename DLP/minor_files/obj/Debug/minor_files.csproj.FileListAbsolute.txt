@@ -1,0 +1,8 @@
+D:\minor_project_files\minor_files\obj\Debug\minor_files.csproj.AssemblyReference.cache
+D:\minor_project_files\minor_files\obj\Debug\minor_files.csproj.SuggestedBindingRedirects.cache
+D:\minor_project_files\minor_files\obj\Debug\minor_files.csproj.CoreCompileInputs.cache
+D:\minor_project_files\minor_files\bin\Debug\minor_files.exe.config
+D:\minor_project_files\minor_files\bin\Debug\minor_files.exe
+D:\minor_project_files\minor_files\bin\Debug\minor_files.pdb
+D:\minor_project_files\minor_files\obj\Debug\minor_files.exe
+D:\minor_project_files\minor_files\obj\Debug\minor_files.pdb
